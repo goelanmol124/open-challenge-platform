@@ -30,6 +30,14 @@ function fill(defs: FieldDef[], given: FieldValues | undefined, where: string): 
 }
 
 async function main() {
+  // Demo users share a public password, so never seed them into production by accident.
+  if (process.env.NODE_ENV === "production" && !args.has("--allow-production")) {
+    throw new Error(
+      "Refusing to seed demo users (shared public password) with NODE_ENV=production. " +
+        "Pass --allow-production if this really is a throwaway demo deployment.",
+    );
+  }
+
   const seed = seeds[activePresetId];
   if (!seed) throw new Error(`No seed data for preset "${activePresetId}"`);
   console.log(`Seeding preset "${activePresetId}" (${config.branding.name})`);
